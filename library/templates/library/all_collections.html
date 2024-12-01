@@ -1,0 +1,46 @@
+{% extends 'library_base.html' %}
+
+{% block page_title %}
+    Kolekcje
+{% endblock %}
+
+{% block page_content %}
+    <div class="uk-container uk-margin-large-top">
+        <h1 class="uk-text-center uk-margin-medium-bottom">Zarządzaj kolekcjami</h1>
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="uk-margin">
+                <label class="uk-form-label" for="collection_name">Nazwa kolekcji</label>
+                <div class="uk-form-controls">
+                    <input class="uk-input uk-form-large" id="collection_name" name="collection_name" type="text" placeholder="Wpisz nazwę kolekcji" required>
+                </div>
+            </div>
+            <div class="uk-text-center">
+                <button class="uk-button uk-button-primary uk-button-large" type="submit">Utwórz kolekcję</button>
+            </div>
+        </form>
+
+        <div class="uk-margin-large-top">
+            {% for collection in collections %}
+                <div class="uk-card uk-card-default uk-card-hover uk-border-rounded uk-margin-bottom">
+                    <div class="uk-card-header uk-text-center" >
+                        <h3 class="uk-card-title" >{{ collection.name }}</h3>
+                        <a href="{% url 'collection_details_url' id=collection.id %}" class="uk-button uk-button-text" style="color: dodgerblue;">>Informacje o kolekcji</a>
+                    </div>
+                    <div class="uk-card-body">
+                        <ul class="uk-list uk-list-divider">
+                            {% for book in collection.books.all %}
+                                <li>
+                                    <span class="uk-text-muted">{{ book.original_title }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="uk-text-center uk-text-muted">Brak dostępnych kolekcji.</p>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

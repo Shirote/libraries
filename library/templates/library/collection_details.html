@@ -1,0 +1,31 @@
+{% extends 'library_base.html' %}
+
+{% block page_title %}
+{{ collection.name }}
+{% endblock %}
+
+{% block page_content %}
+    <h1>{{ collection.name }}</h1>
+
+    <table class="uk-table uk-table-striped uk-margin-medium-top">
+        <thead>
+            <tr>
+                <th>Tytuł</th>
+                <th>Autorzy</th>
+                <th>Okładka</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for book in collection.books.all %}
+                <tr>
+                    <td>{{ book.original_title }}</td>
+                    <td>{{ book.authors }}</td>
+                    <td>
+                        <img src="{{ book.small_image_url }}" alt="Okładka książki" style="width:100px;height:auto;">
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

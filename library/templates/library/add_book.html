@@ -1,0 +1,34 @@
+{% extends 'library_base.html' %}
+
+{% block page_title %}
+    Dodawanie książki
+{% endblock %}
+
+{% block page_content %}
+    <div class="uk-container uk-margin-top">
+        <h1 class="uk-text-center">Dodaj nową książkę</h1>
+        <form method="POST" class="uk-form-stacked uk-form-large">
+            {% csrf_token %}
+            {% for field in book_form %}
+                <div class="uk-margin">
+                    <label class="uk-form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    <div class="uk-form-controls">
+                        {{ field }}
+                    </div>
+                    {% if field.errors %}
+                        <div class="uk-text-danger uk-margin-small-top">
+                            {% for error in field.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <div class="uk-text-center">
+                <button type="submit" class="uk-button uk-button-primary uk-border-rounded">
+                    Zapisz książkę
+                </button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

@@ -1,0 +1,15 @@
+body, html {
+    background-color: transparent;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+.side-bar {
+    background: #2C041D;
+    color: navajowhite;
+}
+
+.gap-small {
+    gap: 15px;
+}

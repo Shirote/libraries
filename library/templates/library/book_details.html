@@ -1,0 +1,37 @@
+{% extends 'library_base.html' %}
+
+{% block page_title %}
+    Szczegóły książki
+{% endblock %}
+
+{% block page_content %}
+    <div class="uk-container uk-margin-large-top">
+        <div class="uk-card uk-card-default uk-card-hover uk-border-rounded uk-box-shadow-large">
+            <div class="uk-card-header">
+                <h2 class="uk-text-center uk-margin-bottom">{{ book.original_title }}</h2>
+                <p class="uk-text-center uk-text-muted">Autor: <strong>{{ book.authors }}</strong></p>
+                <div class="uk-text-center">
+                    {% if book.average_rating >= 4 %}
+                        <span class="uk-text-success uk-text-large">{{ book.average_rating|floatformat:2 }}</span>
+                    {% elif book.average_rating >= 3 %}
+                        <span class="uk-text-warning uk-text-large">{{ book.average_rating|floatformat:2 }}</span>
+                    {% else %}
+                        <span class="uk-text-danger uk-text-large">{{ book.average_rating|floatformat:2 }}</span>
+                    {% endif %}
+                </div>
+                <div class="uk-text-center uk-margin-medium-top">
+                    <p>Data publikacji: <strong>{{ book.original_publication_year }}</strong></p>
+                    <p>Gatunek: <strong>{{ book.genres }}</strong></p>
+                </div>
+            </div>
+
+            <div class="uk-card-body">
+                <p><strong>Krótki opis:</strong> {{ book.short_description }}</p>
+                <div class="uk-text-center">
+                    <img src="{{ book.small_image_url }}" alt="Okładka książki"
+                         class="uk-border-rounded uk-shadow-small" style="max-width: 300px; height: auto;">
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

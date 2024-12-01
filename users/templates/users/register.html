@@ -1,0 +1,36 @@
+{% extends 'library_not_logged.html' %}
+
+{% block page_title %}
+    Rejestracja
+{% endblock %}
+
+{% block page_content %}
+<div class="uk-flex uk-flex-center uk-flex-middle uk-height-viewport">
+    <div class="uk-card uk-card-default uk-card-body  uk-box-shadow-medium uk-border-rounded">
+        <h2 class="uk-text-center uk-margin-remove-bottom" style="color:cornflowerblue;">Zarejestruj się</h2>
+        <form class="uk-form-stacked uk-margin-medium-top" method="POST">
+            {% csrf_token %}
+            {% for field in register_form %}
+                <div class="uk-margin">
+                    <label class="uk-form-label">{{ field.label_tag }}</label>
+                    <div class="uk-form-controls">
+                        {{ field }}
+                    </div>
+                    <div class="uk-text-danger uk-margin-small-top">
+                        {{ field.errors }}
+                    </div>
+                </div>
+            {% endfor %}
+            <div class="uk-margin">
+                <button class="uk-button uk-button-primary uk-border-rounded uk-width-1-1">
+                    Zarejestruj
+                </button>
+            </div>
+        </form>
+        <p class="uk-text-small uk-text-center uk-margin-top">
+            Masz już konto?
+            <a href="{% url 'login' %}" class="uk-link-text uk-text-bold" style="color:cornflowerblue;">Zaloguj się</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

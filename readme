@@ -1,0 +1,41 @@
+**Opis aplikacji**
+Aplikacja umożliwiająca utworzenie domowej biblioteki książek, która daje możliwość zalogowanym użytkownikom przeglądanie książek, tworzenie i zarządzanie kolekcjami (np. książki do przeczytania).
+W zależności od uprawnień, administrator i użytkownik posiadają zróżnicowany dostęp do funkcjonalności aplikacji.
+
+Administrator ma możliwość:
+- Dodawania książek
+- edycji istniejących wpisów
+- ocena książek
+- tworzenia i edycji osobistych kolekcji
+- filtrowania przepisów według kryteriów, takich jak ocena, gatunek, autor
+
+Użytkownik ma możliwość:
+- przeglądania przepisów
+- tworzenia osobistych kolekcji
+- dodawania wpisów do kolekcji
+
+Główny katalog aplikacji Django: libraries;
+Aplikacja: library
+
+**Wymagania**
+Aplikacja korzysta z bazy danych SQLite (db.sqlite3), która jest domyślnie skonfigurowana w pliku settings.py, więc nie wymaga dodatkowej konfiguracji.
+
+1. Sklonuj repozytorium:
+   ```
+   git clone https://github.com/Shirote/libraries
+   ```
+2. Zainstaluj wymagania:
+   ```
+   pip install -r requirements.txt
+
+3. Utwórz bazę danych SQLite i wykonaj migracje danych:
+   ```
+   python manage.py migrate
+
+4. Stwórz superużytkownika, aby mieć dostęp do panelu administratora:
+     ```
+     python manage.py createsuperuser
+
+5. Uruchom serwer:
+   ```
+   python manage.py runserver
