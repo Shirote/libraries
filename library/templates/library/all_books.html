@@ -10,9 +10,9 @@
             <div class="uk-text-muted">Liczba książek w bazie: <strong>{{ book_aggregation.id__count }}</strong></div>
             <div class="uk-text-muted">
                 Średnia ocena tytułów:
-                {% if book_aggregation.average_rating__avg >= 4 %}
+                {% if book_aggregation.statistics__average_rating__avg >= 4 %}
                     <span class="uk-text-success">{{ book_aggregation.statistics__average_rating__avg|floatformat:2 }}</span>
-                {% elif book_aggregation.average_rating__avg > 3 %}
+                {% elif book_aggregation.statistics__average_rating__avg > 3 %}
                     <span class="uk-text-warning">{{ book_aggregation.statistics__average_rating__avg|floatformat:2 }}</span>
                 {% else %}
                     <span class="uk-text-danger">{{ book_aggregation.statistics__average_rating__avg|floatformat:2 }}</span>
@@ -22,10 +22,10 @@
 
         <form class="uk-width-1-1 uk-flex uk-flex-between uk-margin-medium-top">
             <input
-                placeholder="Wyszukaj książki..."
-                id="title" name="title"
-                class="uk-input uk-border-rounded uk-margin-small-right"
-                value="{{ filter_title }}">
+                    placeholder="Wyszukaj książki..."
+                    id="title" name="title"
+                    class="uk-input uk-border-rounded uk-margin-small-right"
+                    value="{{ filter_title }}">
             <button type="submit" class="uk-button uk-button-primary uk-border-rounded">
                 Szukaj
             </button>
@@ -39,39 +39,74 @@
 
         <table class="uk-table uk-table-striped uk-table-hover uk-margin-medium-top uk-text-left">
             <thead>
-                <tr class="uk-text-center">
-                    <th>Tytuł</th>
-                    <th>Autorzy</th>
-                    <th>Data publikacji</th>
-                    <th>ISBN</th>
-                    <th>Okładka</th>
-                    <th>Szczegóły</th>
-                </tr>
+            <tr class="uk-text-center">
+                <th>Tytuł</th>
+                <th>Autorzy</th>
+                <th>Data publikacji</th>
+                <th>ISBN</th>
+                <th>Okładka</th>
+                <th>Szczegóły</th>
+            </tr>
             </thead>
             <tbody>
-                {% for book in books %}
-                    <tr>
-                        <td>{{ book.original_title|title }}</td>
-                        <td>{{ book.authors|title }}</td>
-                        <td>
-                            {% if book.original_publication_year %}
-                                {{ book.original_publication_year }}
-                            {% else %}
-                                <span class="uk-text-muted">Brak daty publikacji</span>
-                            {% endif %}
-                        </td>
-                        <td>{{ book.isbn }}</td>
-                        <td>
-                            <img src="{{ book.small_image_url }}" alt="Okładka książki" style="width:150px;height:auto;" class="uk-border-rounded">
-                        </td>
-                        <td>
-                            <a href="{% url 'book_details_url' id=book.id %}" class="uk-button uk-button-default uk-border-rounded uk-button-small">
-                                Informacje szczegółowe
-                            </a>
-                        </td>
-                    </tr>
-                {% endfor %}
+            {% for book in books %}
+                <tr>
+                    <td>{{ book.original_title|title }}</td>
+                    <td>{{ book.authors|title }}</td>
+                    <td>
+                        {% if book.original_publication_year %}
+                            {{ book.original_publication_year }}
+                        {% else %}
+                            <span class="uk-text-muted">Brak daty publikacji</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ book.isbn }}</td>
+                    <td>
+                        <img src="{{ book.small_image_url }}" alt="Okładka książki" style="width:150px;height:auto;"
+                             class="uk-border-rounded">
+                    </td>
+                    <td>
+                        <a href="{% url 'book_details_url' id=book.id %}"
+                           class="uk-button uk-button-default uk-border-rounded uk-button-small">
+                            Informacje szczegółowe
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
             </tbody>
         </table>
+
+        <ul class="uk-pagination uk-flex-center uk-margin-medium-top">
+            {% if books.has_previous %}
+                <li>
+                    <a href="?page=1{% if filter_title %}&title={{ filter_title }}{% endif %}">Pierwsza</a>
+                </li>
+                <li>
+                    <a href="?page=
+                            {{ books.previous_page_number }}{% if filter_title %}&title={{ filter_title }}{% endif %}">Poprzednia</a>
+                </li>
+            {% endif %}
+
+            {% for num in books.paginator.page_range %}
+                {% if books.number == num %}
+                    <li class="uk-active"><span>{{ num }}</span></li>
+                {% elif num > books.number|add:'-2' and num < books.number|add:'2' %}
+                    <li>
+                        <a href="?page={{ num }}{% if filter_title %}&title={{ filter_title }}{% endif %}">{{ num }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if books.has_next %}
+                <li>
+                    <a href="?page=
+                            {{ books.next_page_number }}{% if filter_title %}&title={{ filter_title }}{% endif %}">Następna</a>
+                </li>
+                <li>
+                    <a href="?page=
+                            {{ books.paginator.num_pages }}{% if filter_title %}&title={{ filter_title }}{% endif %}">Ostatnia</a>
+                </li>
+            {% endif %}
+        </ul>
     </div>
 {% endblock %}

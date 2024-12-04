@@ -5,6 +5,7 @@ from django.db.models import Avg, Count
 from .forms import BookForm
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 
 # Create your views here.
@@ -14,10 +15,28 @@ def all_books(request):
     if title and len(title) > 3:
         found_books = Book.objects.filter(original_title__contains=title)
     else:
-        found_books = Book.objects.all()[:25]
+        found_books = Book.objects.all()
+
+    found_books = found_books.order_by('-id')
+
+    paginator = Paginator(found_books, 25)
+    page = request.GET.get('page')
+
+    try:
+        books = paginator.page(page)
+    except PageNotAnInteger:
+        books = paginator.page(1)
+    except EmptyPage:
+        books = paginator.page(paginator.num_pages)
+
     found_book_aggregation = found_books.aggregate(Avg('statistics__average_rating'), Count('id'))
-    contex = {'books': found_books, 'book_aggregation': found_book_aggregation, 'filter_title': title}
-    return render(request, 'library/all_books.html', contex)
+
+    context = {
+        'books': books,
+        'book_aggregation': found_book_aggregation,
+        'filter_title': title
+    }
+    return render(request, 'library/all_books.html', context)
 
 
 @login_required(login_url='login')
@@ -64,12 +83,23 @@ def add_book(request):
 def all_collections(request):
     logged_user = request.user
 
-    if request.method == 'POST':
+    if request.method == 'POST' and 'collection_name' in request.POST:
         name = request.POST['collection_name']
         BookCollection.objects.create(name=name, owner=logged_user)
         return redirect('all_collections_url')
 
-    book_collections = BookCollection.objects.filter(owner=logged_user).annotate(book_count=Count('id'))
+    if request.method == 'POST' and request.POST.get('action') == 'delete_collection':
+        collection_id = request.POST.get('collection_id')
+        try:
+            collection = BookCollection.objects.get(pk=collection_id)
+        except BookCollection.DoesNotExist:
+            return HttpResponseForbidden('Kolekcja o podanym ID nie istnieje')
+
+        collection.delete()
+        return redirect('all_collections_url')
+
+    book_collections = BookCollection.objects.filter(owner=logged_user).annotate(book_count=Count('books'))
+
     context = {
         'collections': book_collections
     }
@@ -82,6 +112,32 @@ def collection_details(request, id):
     collection = BookCollection.objects.get(pk=id)
     if collection.owner.id != login_user.id:
         return HttpResponseForbidden('Nie masz dostępu do tej kolekcji')
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        book_id = request.POST.get('book_id')
+
+        if book_id:
+            try:
+                book = Book.objects.get(pk=book_id)
+            except Book.DoesNotExist:
+                return HttpResponseForbidden('Książka o podanym ID nie istnieje')
+
+            if action == 'add':
+                collection.books.add(book)
+
+            elif action == 'remove':
+                collection.books.remove(book)
+
+            return redirect('collection_details_url', id=collection.id)
+
+        if action == 'delete_collection':
+            collection.delete()
+            return redirect('all_collections_url')
+
+    books_not_in_collection = Book.objects.exclude(id__in=collection.books.values_list('id'))
+
     return render(request, 'library/collection_details.html', {
-        'collection': collection
+        'collection': collection,
+        'books_not_in_collection': books_not_in_collection
     })

@@ -1,31 +1,98 @@
 {% extends 'library_base.html' %}
 
 {% block page_title %}
-{{ collection.name }}
+    {{ collection.name }}
 {% endblock %}
 
 {% block page_content %}
-    <h1>{{ collection.name }}</h1>
+    <div class="uk-container uk-margin-large-top">
+        <h1 class="uk-text-center">{{ collection.name }}</h1>
 
-    <table class="uk-table uk-table-striped uk-margin-medium-top">
-        <thead>
-            <tr>
-                <th>Tytuł</th>
-                <th>Autorzy</th>
-                <th>Okładka</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for book in collection.books.all %}
-                <tr>
-                    <td>{{ book.original_title }}</td>
-                    <td>{{ book.authors }}</td>
-                    <td>
-                        <img src="{{ book.small_image_url }}" alt="Okładka książki" style="width:100px;height:auto;">
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+        <div class="uk-margin-large-top">
+            <h3>Usuwanie kolekcji:</h3>
+            {% if collection.owner == request.user %}
+                <form method="POST" action="{% url 'collection_details_url' id=collection.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="delete_collection">
+                    <button type="submit" class="uk-button uk-button-danger uk-border-rounded">
+                        Usuń całą kolekcję
+                    </button>
+                </form>
+            {% else %}
+                <p class="uk-text-muted">Nie masz uprawnień do usunięcia tej kolekcji.</p>
+            {% endif %}
+        </div>
 
+        <div class="uk-margin-large-top">
+            <h3>Książki w kolekcji:</h3>
+            {% if collection.books.exists %}
+                <table class="uk-table uk-table-divider">
+                    <thead>
+                    <tr>
+                        <th>Tytuł</th>
+                        <th>Autor</th>
+                        <th>Akcje</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for book in collection.books.all %}
+                        <tr>
+                            <td>{{ book.original_title }}</td>
+                            <td>{{ book.authors }}</td>
+                            <td>
+                                <form method="POST" action="{% url 'collection_details_url' id=collection.id %}"
+                                      style="display:inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="book_id" value="{{ book.id }}">
+                                    <input type="hidden" name="action" value="remove">
+                                    <button type="submit" class="uk-button uk-button-danger uk-border-rounded">
+                                        Usuń
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="uk-text-muted">Brak książek w tej kolekcji.</p>
+            {% endif %}
+        </div>
+
+        <div class="uk-margin-large-top">
+            <h3>Dodaj książki do kolekcji:</h3>
+            {% if books_not_in_collection %}
+                <table class="uk-table uk-table-divider">
+                    <thead>
+                    <tr>
+                        <th>Tytuł</th>
+                        <th>Autor</th>
+                        <th>Akcje</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for book in books_not_in_collection %}
+                        <tr>
+                            <td>{{ book.original_title }}</td>
+                            <td>{{ book.authors }}</td>
+                            <td>
+                                <form method="POST" action="{% url 'collection_details_url' id=collection.id %}"
+                                      style="display:inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="book_id" value="{{ book.id }}">
+                                    <input type="hidden" name="action" value="add">
+                                    <button type="submit" class="uk-button uk-button-primary uk-border-rounded">
+                                        Dodaj
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="uk-text-muted">Brak książek dostępnych do dodania.</p>
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}

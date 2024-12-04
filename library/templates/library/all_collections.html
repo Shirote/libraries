@@ -13,7 +13,8 @@
             <div class="uk-margin">
                 <label class="uk-form-label" for="collection_name">Nazwa kolekcji</label>
                 <div class="uk-form-controls">
-                    <input class="uk-input uk-form-large" id="collection_name" name="collection_name" type="text" placeholder="Wpisz nazwę kolekcji" required>
+                    <input class="uk-input uk-form-large" id="collection_name" name="collection_name" type="text"
+                           placeholder="Wpisz nazwę kolekcji" required>
                 </div>
             </div>
             <div class="uk-text-center">
@@ -24,9 +25,10 @@
         <div class="uk-margin-large-top">
             {% for collection in collections %}
                 <div class="uk-card uk-card-default uk-card-hover uk-border-rounded uk-margin-bottom">
-                    <div class="uk-card-header uk-text-center" >
-                        <h3 class="uk-card-title" >{{ collection.name }}</h3>
-                        <a href="{% url 'collection_details_url' id=collection.id %}" class="uk-button uk-button-text" style="color: dodgerblue;">>Informacje o kolekcji</a>
+                    <div class="uk-card-header uk-text-center">
+                        <h3 class="uk-card-title">{{ collection.name }}</h3>
+                        <a href="{% url 'collection_details_url' id=collection.id %}" class="uk-button uk-button-text"
+                           style="color: dodgerblue;">>Informacje o kolekcji</a>
                     </div>
                     <div class="uk-card-body">
                         <ul class="uk-list uk-list-divider">
@@ -36,6 +38,16 @@
                                 </li>
                             {% endfor %}
                         </ul>
+                    </div>
+                    <div class="uk-card-footer uk-text-center">
+                        <form method="POST" action="{% url 'all_collections_url' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="delete_collection">
+                            <input type="hidden" name="collection_id" value="{{ collection.id }}">
+                            <button type="submit" class="uk-button uk-button-danger uk-border-rounded">
+                                Usuń kolekcję
+                            </button>
+                        </form>
                     </div>
                 </div>
             {% empty %}

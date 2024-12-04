@@ -10,9 +10,11 @@ Administrator ma możliwość:
 - filtrowania przepisów według kryteriów, takich jak ocena, gatunek, autor
 
 Użytkownik ma możliwość:
-- przeglądania przepisów
+- przeglądania książek
 - tworzenia osobistych kolekcji
 - dodawania wpisów do kolekcji
+- usuwania wpisów z kolekcji
+- usuwania całej kolekcji
 
 Główny katalog aplikacji Django: libraries;
 Aplikacja: library
